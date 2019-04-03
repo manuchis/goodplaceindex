@@ -1,0 +1,56 @@
+{
+  "requested_by_user": 212,
+  "requested_times": 32,
+  "requested_times_per_user": 4,
+  "created_at": "Sun Apr 03 23:48:36 +0000 2011",
+  "last_visited" : "Sun Apr 03 23:48:36 +0000 2011",
+  "properties": {
+    "property_id": 1,
+    "property_image_url": "",
+    "property_address": {
+        "type_street": "street",
+        "street_name": "castillejos",
+        "street_number": "179",
+        "floor": "3",
+        "door": "3",
+        "stairs": "izq",
+        "neighborhood":"Fort Pienc",
+        "district": "Eixample",
+        "city": "Barcelona",
+        "state": "Barcelona",
+        "country": "Spain",
+        "postalcode": "08013"
+      },
+    "coordinates": [ 41.4020605,
+      2.1817081],
+    "region_geometry": "",
+    "region_average": 73,
+    "goodplaceindex":[{
+        "average": 56,
+        "index_quality": [{
+          "average": 44,
+          "values": [23,44,65,12,44,33,78]
+          }],
+        "index_market": [{
+          "average": 42,
+          "values": [23,44,65,12,44,33,78]
+          }],
+        "index_proximity": [{
+          "average": 60,
+          "values": [23,44,65,12,44,33,78]
+          }],
+        "index_mobility": [{
+          "average": 55,
+          "values": [23,44,65,12,44,33,78]
+          }],
+        "index_environment": [{
+          "average": 48,
+          "values": [23,44,65,12,44,33,78]
+          }],
+        "index_demography": [{
+          "average": 24,
+          "values": [23,44,65,12,44,33,78]
+          }]
+      }]
+  }
+}

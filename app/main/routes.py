@@ -1,12 +1,13 @@
 from datetime import datetime
 from flask import render_template, flash, redirect, url_for, request, g, \
-    jsonify, current_app
+    jsonify, current_app, json
+import requests
 from flask_login import current_user, login_required
 from flask_babel import _, get_locale
 from guess_language import guess_language
 from app import db
-from app.main.forms import EditProfileForm, PostForm, SearchForm, MessageForm
-from app.models import User, Post, Message, Notification
+from app.main.forms import EditProfileForm, PostForm, SearchForm, MessageForm, PropertySearch, EditCompanyForm, CreateCompanyForm
+from app.models import User, Post, Message, Notification, Company
 from app.translate import translate
 from app.main import bp
 
@@ -24,27 +25,32 @@ def before_request():
 @bp.route('/index', methods=['GET', 'POST'])
 @login_required
 def index():
-    form = PostForm()
+    form = PropertySearch()
     if form.validate_on_submit():
-        language = guess_language(form.post.data)
-        if language == 'UNKNOWN' or len(language) > 5:
-            language = ''
-        post = Post(body=form.post.data, author=current_user,
-                    language=language)
-        db.session.add(post)
-        db.session.commit()
-        flash(_('Your post is now live!'))
+        flash(_('You searched for a Property'))
         return redirect(url_for('main.index'))
-    page = request.args.get('page', 1, type=int)
-    posts = current_user.followed_posts().paginate(
-        page, current_app.config['POSTS_PER_PAGE'], False)
-    next_url = url_for('main.index', page=posts.next_num) \
-        if posts.has_next else None
-    prev_url = url_for('main.index', page=posts.prev_num) \
-        if posts.has_prev else None
-    return render_template('index.html', title=_('Home'), form=form,
-                           posts=posts.items, next_url=next_url,
-                           prev_url=prev_url)
+    return render_template('index.html', title=_('Home'), form=form)
+#    form = PostForm()
+#    if form.validate_on_submit():
+#        language = guess_language(form.post.data)
+#        if language == 'UNKNOWN' or len(language) > 5:
+#            language = ''
+#        post = Post(body=form.post.data, author=current_user,
+#                    language=language)
+#        db.session.add(post)
+#        db.session.commit()
+#        flash(_('Your post is now live!'))
+#        return redirect(url_for('main.index'))
+#    page = request.args.get('page', 1, type=int)
+#    posts = current_user.followed_posts().paginate(
+#        page, current_app.config['POSTS_PER_PAGE'], False)
+#    next_url = url_for('main.index', page=posts.next_num) \
+#        if posts.has_next else None
+#    prev_url = url_for('main.index', page=posts.prev_num) \
+#        if posts.has_prev else None
+#    return render_template('index.html', title=_('Home'), form=form,
+#                           posts=posts.items, next_url=next_url,
+#                           prev_url=prev_url)
 
 
 @bp.route('/explore')
@@ -61,19 +67,74 @@ def explore():
                            posts=posts.items, next_url=next_url,
                            prev_url=prev_url)
 
+@bp.route('/property/<int:id>')
+@login_required
+def property(id):
+    prop_data = requests.get(request.url_root+'static/property_example.json').json()
+    return render_template('property.html', title=_('Property details'), prop_data=prop_data)
+
+@bp.route('/company/<int:id>')
+@login_required
+def company(id):
+    company = Company.query.filter_by(id=id).first_or_404()
+    return render_template('company.html', company=company)
+
+@bp.route('/company/<int:id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_company(id):
+    company = Company.query.filter_by(id=id).first_or_404()
+    form = EditCompanyForm(company.name)
+    if current_user.id is not company.user_id:
+        flash(_('You must be the company owner to edit it'))
+        return redirect(url_for('main.index'));
+
+    if form.validate_on_submit():
+        company.name = form.name.data
+        db.session.commit()
+        flash(_('Your changes have been saved.'))
+        return redirect(url_for('main.edit_company', id=id))
+    elif request.method == 'GET':
+        form.name.data = company.name
+    return render_template('edit_company.html',  title=_('Edit Company'), company=company, form=form)
+
+@bp.route('/company/<int:id>/delete')
+@login_required
+def delete_company(id):
+    form = CreateCompanyForm()
+    company = Company.query.filter_by(id=id).first_or_404()
+    if current_user.id is not company.user_id:
+        flash(_('You must be the company owner to edit it'))
+        return redirect(url_for('main.index'));
+    db.session.delete(company)
+    db.session.commit()
+    return render_template('new_company.html', form=form)
+
+@bp.route('/company/new', methods=['GET', 'POST'])
+@login_required
+def new_company():
+    form = CreateCompanyForm()
+    if form.validate_on_submit():
+        company = Company(name=form.name.data, user_id=current_user.id)
+        db.session.add(company)
+        db.session.commit()
+        flash(_('Your changes have been saved.'))
+        c = Company.query.filter_by(name=form.name.data).first()
+        return redirect(url_for('main.edit_company', id=c.id))
+    return render_template('new_company.html',  title=_('Create new Company'), form=form)
 
 @bp.route('/user/<username>')
 @login_required
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
     page = request.args.get('page', 1, type=int)
+    companies = user.companies
     posts = user.posts.order_by(Post.timestamp.desc()).paginate(
         page, current_app.config['POSTS_PER_PAGE'], False)
     next_url = url_for('main.user', username=user.username,
                        page=posts.next_num) if posts.has_next else None
     prev_url = url_for('main.user', username=user.username,
                        page=posts.prev_num) if posts.has_prev else None
-    return render_template('user.html', user=user, posts=posts.items,
+    return render_template('user.html', user=user, posts=posts.items, companies=companies,
                            next_url=next_url, prev_url=prev_url)
 
 
