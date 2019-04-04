@@ -17,6 +17,10 @@
     <p><strong>{{ empl.username}}</strong> <a href="{{ url_for('main.company_fire', company_id=company.id, user_id=empl.id) }}" class="btn btn-small">{{ _('Fire employee') }}</a> </p>
     {% endfor %}
     </div>
+    {% if current_user.has_role('admin') %}
+      <p><a href="{{ url_for('main.company_hire', company_id=company.id) }}">{{ _('Add employees') }}</a></p>
+      {% endif %}
+
     </div>
 
 {% endblock %}
