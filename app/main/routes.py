@@ -48,7 +48,8 @@ def index():
         flash(_('You searched for a Property'))
         return redirect(url_for('main.index'))
     return render_template('index.html', title=_('Home'), form=form)
-#    form = PostForm()
+#  >>  for _dep_index.html original file >>
+# form = PostForm()
 #    if form.validate_on_submit():
 #        language = guess_language(form.post.data)
 #        if language == 'UNKNOWN' or len(language) > 5:

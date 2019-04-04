@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <h1>{{ _('Hi, %(username)s!', username=current_user.username) }}</h1>
+
+    <div class="row">
+      <div class="col-md-4">
+        <h2>{{ _('Users') }}</h2>
+        {% for user in users %}
+        <p><strong>{{user.username}} ({{user.id}})</strong> <br> {{_('Works in %(emp)s', emp=user.employers)}}</p>
+
+        {% endfor %}
+      </div>
+      <div class="col-md-4">
+        <h2>{{ _('Companies') }}</h2>
+        {% for company in companies %}
+        <p><strong>{{company.name}} ({{company.id}})</strong> <br> {{_('Belongs to %(owner)s', owner=company.user_id)}}</p>
+        {% endfor %}
+      </div>
+    </div>
+
+
+{% endblock %}
