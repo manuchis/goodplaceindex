@@ -9,4 +9,14 @@
         </div>
     </div>
     <a href="{{ url_for('main.delete_company', id=company.id) }}" class="btn btn-default">{{ _('Delete company') }}</a>
+
+    <div class="row">
+      <h2>{{ _('Employees') }}</h2>
+    <div class="col-md-4">
+    {% for empl in company.employees %}
+    <p><strong>{{ empl.username}}</strong> <a href="{{ url_for('main.company_fire', company_id=company.id, user_id=empl.id) }}" class="btn btn-small">{{ _('Fire employee') }}</a> </p>
+    {% endfor %}
+    </div>
+    </div>
+
 {% endblock %}

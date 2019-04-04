@@ -87,7 +87,6 @@ def edit_company(id):
     if current_user.id is not company.user_id:
         flash(_('You must be the company owner to edit it'))
         return redirect(url_for('main.index'));
-
     if form.validate_on_submit():
         company.name = form.name.data
         db.session.commit()
@@ -121,6 +120,25 @@ def new_company():
         c = Company.query.filter_by(name=form.name.data).first()
         return redirect(url_for('main.edit_company', id=c.id))
     return render_template('new_company.html',  title=_('Create new Company'), form=form)
+
+@bp.route('/company/<int:company_id>/fire/<int:user_id>')
+@login_required
+def company_fire(company_id, user_id):
+    company = Company.query.filter_by(id=company_id).first_or_404()
+    form = EditCompanyForm(company.name)
+    user = User.query.filter_by(id=user_id).first()
+
+    if user is None:
+        flash(_('User %(username)s not found.', username=username))
+        return redirect(url_for('main.edit_company', title=_('Edit Company'), id=company.id, company=company, form=form))
+    if user == current_user:
+        flash(_('You cannot fire yourself!'))
+        return redirect(url_for('main.edit_company', title=_('Edit Company'), id=company.id, company=company, form=form))
+    company.fire(user)
+    db.session.commit()
+    flash(_('You fired %(username)s', username=user.username))
+    return redirect(url_for('main.edit_company', title=_('Edit Company'), id=company.id, company=company, form=form))
+
 
 @bp.route('/user/<username>')
 @login_required

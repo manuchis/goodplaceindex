@@ -87,6 +87,11 @@ followers = db.Table(
     db.Column('followed_id', db.Integer, db.ForeignKey('user.id'))
 )
 
+employment_table = db.Table('employment',
+    db.Column('company_id', db.Integer, db.ForeignKey('company.id'), primary_key=True),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True)
+)
+
 
 class User(UserMixin, PaginatedAPIMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -240,13 +245,50 @@ class User(UserMixin, PaginatedAPIMixin, db.Model):
 def load_user(id):
     return User.query.get(int(id))
 
-class Company(SearchableMixin, db.Model):
+class Company(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    employees = db.relationship("User",
+                    secondary=employment_table,
+                    backref="employers", lazy='dynamic')
+
+
+
+#    employees = relationship("User", back_populates="company")
+#    employ = db.relationship('Company', secondary=employees, lazy='subquery',
+#        backref=db.backref('employers', lazy=True))
+
+#    employ = db.relationship(
+#        'User', secondary=employees,
+#        primaryjoin=(employees.c.user_id == id),
+#        secondaryjoin=(employees.c.company_id == id),
+#        backref=db.backref('employer', lazy='dynamic'), lazy='dynamic')
+
+#    db.relationship('User', secondary=employees, lazy='subquery',
+#        backref=db.backref('companies', lazy=True))
 
     def __repr__(self):
         return '<Company {}>'.format(self.name)
+
+    def hire(self, user):
+        if not self.is_employing(user):
+            self.employees.append(user)
+
+    def fire(self, user):
+        if self.is_employing(user):
+            self.employees.remove(user)
+
+    def is_employing(self, user):
+        return self.employees.filter(
+            employment_table.c.user_id == user.id).count() > 0
+
+#    def users_employed(self):
+#        employed = User.query.join(
+#            employees, (employees.c.user_id == User.id)).filter(
+#                employees.c.company_id == self.id)
+        #own = User.query.filter_by(company_id=self.id)
+#        return employed #.union(own)
 
 class Post(SearchableMixin, db.Model):
     __searchable__ = ['body']
