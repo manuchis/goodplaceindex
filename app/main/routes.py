@@ -102,6 +102,7 @@ def company(id):
 def edit_company(id):
     company = Company.query.filter_by(id=id).first_or_404()
     form = EditCompanyForm(company.name)
+    users = User.query.all()
     if current_user.id is not company.user_id:
         flash(_('You must be the company owner to edit it'))
         return redirect(url_for('main.index'));
@@ -112,7 +113,7 @@ def edit_company(id):
         return redirect(url_for('main.edit_company', id=id))
     elif request.method == 'GET':
         form.name.data = company.name
-    return render_template('edit_company.html',  title=_('Edit Company'), company=company, form=form)
+    return render_template('edit_company.html',  title=_('Edit Company'), company=company, form=form, users=users)
 
 @bp.route('/company/<int:id>/delete')
 @login_required
@@ -157,18 +158,25 @@ def company_fire(company_id, user_id):
     flash(_('You fired %(username)s', username=user.username))
     return redirect(url_for('main.edit_company', title=_('Edit Company'), id=company.id, company=company, form=form))
 
-@bp.route('/company/<int:company_id>/hire')
+@bp.route('/company/<int:company_id>/hire/<int:user_id>')
 @login_required
 @admin_permission.require()
-def company_hire(company_id):
+def company_hire(company_id, user_id):
     company = Company.query.filter_by(id=company_id).first_or_404()
     form = EditCompanyForm(company.name)
-
+    user = User.query.filter_by(id=user_id).first()
     ### falta la funcion !!
+    if user is None:
+        flash(_('User %(username)s not found.', username=username))
+        return redirect(url_for('main.edit_company', title=_('Edit Company'), id=company.id, company=company, form=form))
+    if user == current_user:
+        flash(_('You cannot fire yourself!'))
+        return redirect(url_for('main.edit_company', title=_('Edit Company'), id=company.id, company=company, form=form))
 
-    flash(_('You hired %(username)s', username='someone'))
+    company.hire(user)
+    db.session.commit()
+    flash(_('You added %(username)s to the company', username=user.username))
     return redirect(url_for('main.edit_company', title=_('Edit Company'), id=company.id, company=company, form=form))
-
 
 @bp.route('/user/<username>')
 @login_required
