@@ -43,11 +43,7 @@ admin_permission = Permission(RoleNeed('admin'))
 @bp.route('/index', methods=['GET', 'POST'])
 @login_required
 def index():
-    form = PropertySearch()
-    if form.validate_on_submit():
-        flash(_('You searched for a Property'))
-        return redirect(url_for('main.index'))
-    return render_template('index.html', title=_('Home'), form=form)
+    return render_template('index.html', title=_('Home'))
 #  >>  for _dep_index.html original file >>
 # form = PostForm()
 #    if form.validate_on_submit():
@@ -85,12 +81,6 @@ def explore():
     return render_template('index.html', title=_('Explore'),
                            posts=posts.items, next_url=next_url,
                            prev_url=prev_url)
-
-@bp.route('/property/<int:id>')
-@login_required
-def property(id):
-    prop_data = requests.get(request.url_root+'static/property_example.json').json()
-    return render_template('property.html', title=_('Property details'), prop_data=prop_data)
 
 @bp.route('/company/<int:id>')
 @login_required

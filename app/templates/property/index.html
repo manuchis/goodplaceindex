@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+<h1>Property Search</h1>
+{% if form %}
+<form action="" id="GeogreferenceForm" method="post" novalidate>
+    {{ form.hidden_tag() }}
+    <p>
+        {{ form.post.label }}<br>
+        {{ form.post }}
+        <a href="javascript:georeference(
+                    '#addressElem',
+                    '#propCoordinates');"> Search for coordinates </a>
+    </p>
+    <div id="propCoordinates"></div>
+    <p>{{ form.submit() }}</p>
+</form>
+
+<br>
+
+{% endif %}
+
+{% endblock %}

@@ -7,5 +7,6 @@
     {{ wtf.quick_form(form) }}
     <br>
     {% endif %}
+    <a href="{{ url_for('property.property') }}">{{_('Go to property search')}}</a>
 
 {% endblock %}
