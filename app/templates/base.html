@@ -183,15 +183,27 @@
           accessToken: '{{ maptoken }}'
         }).addTo(mymap);
         var marker;
-        function georeference(addressElem, destElem) {    
+        function georeference(addressElem, destElem) {
+           text = $('#address-street_name').val()+ ' '
+             +$('#address-street_number').val()+ ' '
+             +$('#address-city').val()+ ' '
+             +$('#address-postalcode').val()+ ' '
+             +$('#address-province').val()+ ' '
+             +$('#address-region').val()+ ' '
+             +$('#address-country').val();
             $(destElem).html('<img src="{{ url_for('static', filename='loading.gif') }}">');
             $.post('/property/georeference', {
-                text: $(addressElem).val()
+                text: text
             }).done(function(response) {
-                $(destElem).html('place id: '+response['place_id']+'<br> lat: '+response['lat']+'<br> lon:'+response['lon'])
-                if(marker){ mymap.removeLayer(marker); }
-                mymap.setView(new L.LatLng(response['lat'], response['lon']), 15);
-                marker = L.marker([response['lat'], response['lon']]).addTo(mymap);
+                if(response != null){
+                  $(destElem).html('place id: '+response['place_id']+'<br> lat: '+response['lat']+'<br> lon:'+response['lon'])
+                  if(marker){ mymap.removeLayer(marker); }
+                  mymap.setView(new L.LatLng(response['lat'], response['lon']), 15);
+                  marker = L.marker([response['lat'], response['lon']]).addTo(mymap);
+                }else{
+                  $(destElem).html('{{ _('Try again') }}');
+                }
+
             }).fail(function() {
                 $(destElem).text("{{ _('Error: Could not contact server.') }}");
             });
