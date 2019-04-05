@@ -50,7 +50,7 @@ def property():
     #if form.validate_on_submit():
         #flash(_('You searched for a Property'))
         #return redirect(url_for('main.index'))
-    return render_template('property/index.html', title=_('Home'), form=form)
+    return render_template('property/index.html', title=_('Home'), form=form, maptoken=current_app.config['MAPBOX_TOKEN'])
 
 @bp.route('/georeference', methods=['POST'])
 @login_required
@@ -59,10 +59,10 @@ def georeference():
         geolocator = Nominatim(user_agent="goodplaceindex/1")
         location = geolocator.geocode(request.form["text"])
         return jsonify(location.raw)
+                #{'place_id': 138642704, 'licence': 'Data © OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright', 'osm_type': 'way', 'osm_id': 264768896, 'boundingbox': ['40.7407597', '40.7413004', '-73.9898715', '-73.9895014'], 'lat': '40.7410861', 'lon': '-73.9896298241625', 'display_name': 'Flatiron Building, 175, 5th Avenue, Flatiron District, Manhattan, Manhattan Community Board 5, New York County, NYC, New York, 10010, USA', 'class': 'tourism', 'type': 'attraction', 'importance': 0.793003315521974, 'icon': 'https://nominatim.openstreetmap.org/images/mapicons/poi_point_of_interest.p.20.png'}
     except Exception as e:
         #return str(e)
         return jsonify({'text': str(e)})
-        #translate(request.form['text'], request.form['source_language'], request.form['dest_language'])})
 
 @bp.route('/detailes/<int:id>')
 @login_required
