@@ -19,14 +19,14 @@ class AddressForm(FlaskForm):
     postalcode = IntegerField(_l('Postal Code'), validators=[DataRequired()])
     province = StringField(_l('Province'))
     region = StringField(_l('Region'))
-    country = CountrySelectField(_l('Country'), validators=[DataRequired()])
+    country = CountrySelectField(_l('Country'))
 
 class PropertyDescription(FlaskForm):
-    year = IntegerField(_l('Built year'))
-    size = IntegerField(_l('Size'))
-    use_size = IntegerField(_l('Usable size'))
-    rooms = IntegerField(_l('Rooms'))
-    bathrooms = IntegerField(_l('Bathrooms'))
+    year = IntegerField(_l('Built year'), validators=[DataRequired()])
+    size = IntegerField(_l('Size'), validators=[DataRequired()])
+    use_size = IntegerField(_l('Usable size'), validators=[DataRequired()])
+    rooms = IntegerField(_l('Rooms'), validators=[DataRequired()])
+    bathrooms = IntegerField(_l('Bathrooms'), validators=[DataRequired()])
     balcony = BooleanField(_l('Balcony'))
     terrace = BooleanField(_l('Terrace'))
     patio = BooleanField(_l('Patio/Garden'))
@@ -39,5 +39,4 @@ class PropertyDescription(FlaskForm):
 class PropertySearch(FlaskForm):
     address = FormField(AddressForm)
     description = FormField(PropertyDescription)
-    #post = StringField(_l('Insert address'), **{'id':'addressElem'}, validators=[DataRequired()])
     submit = SubmitField(_l('Submit'))

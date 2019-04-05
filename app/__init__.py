@@ -14,6 +14,7 @@ from elasticsearch import Elasticsearch
 from redis import Redis
 import rq
 from config import Config
+from flask_wtf.csrf import CsrfProtect
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -25,6 +26,7 @@ bootstrap = Bootstrap()
 moment = Moment()
 babel = Babel()
 principal = Principal()
+csrf = CsrfProtect()
 
 def create_app(config_class=Config):
     app = Flask(__name__)
@@ -38,6 +40,7 @@ def create_app(config_class=Config):
     moment.init_app(app)
     babel.init_app(app)
     principal.init_app(app)
+    csrf.init_app(app)
 
     app.elasticsearch = Elasticsearch([app.config['ELASTICSEARCH_URL']]) \
         if app.config['ELASTICSEARCH_URL'] else None

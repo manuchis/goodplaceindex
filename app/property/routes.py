@@ -47,9 +47,9 @@ admin_permission = Permission(RoleNeed('admin'))
 @login_required
 def property():
     form = PropertySearch()
-    #if form.validate_on_submit():
-        #flash(_('You searched for a Property'))
-        #return redirect(url_for('main.index'))
+    if form.validate_on_submit():
+    #    flash(_('You searched for a Property'))
+        return redirect(url_for('property.property_details'))
     return render_template('property/index.html', title=_('Home'), form=form, maptoken=current_app.config['MAPBOX_TOKEN'])
 
 @bp.route('/georeference', methods=['POST'])
@@ -64,8 +64,8 @@ def georeference():
         #return str(e)
         return jsonify({'text': str(e)})
 
-@bp.route('/detailes/<int:id>')
+@bp.route('/details', methods=['GET', 'POST'])
 @login_required
-def property_details(id):
+def property_details():
     prop_data = requests.get(request.url_root+'static/property_example.json').json()
     return render_template('property/details.html', title=_('Property details'), prop_data=prop_data)
