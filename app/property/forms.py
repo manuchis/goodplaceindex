@@ -12,7 +12,7 @@ class CountrySelectField(SelectField):
         self.choices = [(country.alpha_2, country.name) for country in pycountry.countries]
 
 class AddressForm(FlaskForm):
-    street_type = StringField(_l('Street type'), validators=[DataRequired()])
+#    street_type = StringField(_l('Street type'), validators=[DataRequired()])
     street_name = StringField(_l('Street'), validators=[DataRequired()])
     street_number = IntegerField(_l('Number'), validators=[DataRequired()])
     city = StringField(_l('City'), validators=[DataRequired()])

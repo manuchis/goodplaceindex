@@ -2,8 +2,10 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 
 {% block app_content %}
+
   <div>
     <p>Property ID= {{ prop_data.properties.property_id }}</p>
     <p>Property street= {{ prop_data.properties.property_address.street_name }}</p>
   </div>
+
 {% endblock %}

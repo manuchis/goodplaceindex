@@ -68,6 +68,7 @@ def index():
 #                           prev_url=prev_url)
 
 
+## Explore should be updated, comes from original deploy
 @bp.route('/explore')
 @login_required
 def explore():
@@ -82,12 +83,14 @@ def explore():
                            posts=posts.items, next_url=next_url,
                            prev_url=prev_url)
 
+# company profile
 @bp.route('/company/<int:id>')
 @login_required
 def company(id):
     company = Company.query.filter_by(id=id).first_or_404()
     return render_template('company.html', company=company)
 
+# edit company profile only if user is owner
 @bp.route('/company/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
 def edit_company(id):
@@ -106,6 +109,7 @@ def edit_company(id):
         form.name.data = company.name
     return render_template('edit_company.html',  title=_('Edit Company'), company=company, form=form, users=users)
 
+#deletes company only if user is owner
 @bp.route('/company/<int:id>/delete')
 @login_required
 def delete_company(id):
@@ -118,6 +122,7 @@ def delete_company(id):
     db.session.commit()
     return render_template('new_company.html', form=form)
 
+#creates new company (only available from the current user as owner)
 @bp.route('/company/new', methods=['GET', 'POST'])
 @login_required
 def new_company():
@@ -131,6 +136,7 @@ def new_company():
         return redirect(url_for('main.edit_company', id=c.id))
     return render_template('new_company.html',  title=_('Create new Company'), form=form)
 
+# delets user as employee of the company
 @bp.route('/company/<int:company_id>/fire/<int:user_id>')
 @login_required
 def company_fire(company_id, user_id):
@@ -149,6 +155,7 @@ def company_fire(company_id, user_id):
     flash(_('You fired %(username)s', username=user.username))
     return redirect(url_for('main.edit_company', title=_('Edit Company'), id=company.id, company=company, form=form))
 
+# add new user as employee of the company
 @bp.route('/company/<int:company_id>/hire/<int:user_id>')
 @login_required
 @admin_permission.require()
@@ -169,6 +176,7 @@ def company_hire(company_id, user_id):
     flash(_('You added %(username)s to the company', username=user.username))
     return redirect(url_for('main.edit_company', title=_('Edit Company'), id=company.id, company=company, form=form))
 
+# user profile
 @bp.route('/user/<username>')
 @login_required
 def user(username):
@@ -184,14 +192,14 @@ def user(username):
     return render_template('user.html', user=user, posts=posts.items, companies=companies,
                            next_url=next_url, prev_url=prev_url)
 
-
+# user profiles, comes from previous deploy
 @bp.route('/user/<username>/popup')
 @login_required
 def user_popup(username):
     user = User.query.filter_by(username=username).first_or_404()
     return render_template('user_popup.html', user=user)
 
-
+# edits user profile
 @bp.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
@@ -208,7 +216,7 @@ def edit_profile():
     return render_template('edit_profile.html', title=_('Edit Profile'),
                            form=form)
 
-
+# allows to follow user
 @bp.route('/follow/<username>')
 @login_required
 def follow(username):
@@ -224,7 +232,7 @@ def follow(username):
     flash(_('You are following %(username)s!', username=username))
     return redirect(url_for('main.user', username=username))
 
-
+# allows to unfollow user
 @bp.route('/unfollow/<username>')
 @login_required
 def unfollow(username):
@@ -240,7 +248,7 @@ def unfollow(username):
     flash(_('You are not following %(username)s.', username=username))
     return redirect(url_for('main.user', username=username))
 
-
+#automatic translate, comes from previous deploy
 @bp.route('/translate', methods=['POST'])
 @login_required
 def translate_text():
@@ -248,7 +256,7 @@ def translate_text():
                                       request.form['source_language'],
                                       request.form['dest_language'])})
 
-
+# searchs on posts, should be changed to find properties, comes from previous deploy
 @bp.route('/search')
 @login_required
 def search():
