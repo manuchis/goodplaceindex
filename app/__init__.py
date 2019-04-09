@@ -14,7 +14,7 @@ from elasticsearch import Elasticsearch
 from redis import Redis
 import rq
 from config import Config
-from flask_wtf.csrf import CsrfProtect
+from flask_wtf.csrf import CSRFProtect
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -26,7 +26,7 @@ bootstrap = Bootstrap()
 moment = Moment()
 babel = Babel()
 principal = Principal()
-csrf = CsrfProtect()
+csrf = CSRFProtect()
 
 def create_app(config_class=Config):
     app = Flask(__name__)
