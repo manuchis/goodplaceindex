@@ -1,22 +1,81 @@
 {% extends "base.html" %}
 {% import 'bootstrap/wtf.html' as wtf %}
 
+
 {% block app_content %}
     <h1>{{ _('Hi, %(username)s!', username=current_user.username) }}</h1>
 
     <div class="row">
-      <div class="col-md-4">
+      <div class="col-md-6">
         <h2>{{ _('Users') }}</h2>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+            <th>#</th>
+            <th>{{_('Username')}}</th>
+            <th>{{_('Roles')}}</th>
+            <th>{{_('Companies')}}</th>
+            <th>{{_('Edit')}}</th>
+            </tr>
+          </thead>
+        <tbody>
         {% for user in users %}
-        <p><strong>{{user.username}} ({{user.id}})</strong> <br> {{_('Works in %(emp)s', emp=user.employers)}}</p>
+        <tr>
+          <th>{{user.id}}</th>
+          <th>
+            <strong>{{user.username}}</strong>
+          </th>
+          <td>
+            {% if user.roles %}
+            {% set comma = joiner("and") %}
+            {% for role in user.roles %}
+            {{comma()}} {{role.name}}
+            {% endfor %}
+            {% endif %}
+          </td>
 
+          <td>
+            {% if user.employers %}
+            {% set comma = joiner("and") %}
+            {% for employer in user.employers %}
+              {{ comma() }} <a href="">{{ employer.name }}</a>
+            {% endfor %}
+            {% endif %}
+          </td>
+          <td>
+            <a href="">{{_('Edit')}}</a>
+          </td>
+
+        </tr>
         {% endfor %}
+        </tbody>
+      </table>
       </div>
-      <div class="col-md-4">
+
+      <div class="col-md-6">
         <h2>{{ _('Companies') }}</h2>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+            <th>#</th>
+            <th>{{_('Company')}}</th>
+            <th>{{_('Owner')}}</th>
+            <th>{{_('Edit')}}</th>
+            </tr>
+          </thead>
+        <tbody>
         {% for company in companies %}
-        <p><strong>{{company.name}} ({{company.id}})</strong> <br> {{_('Belongs to %(owner)s', owner=company.user_id)}}</p>
+        <tr>
+        <th>{{company.id}}</th>
+        <td><strong>{{company.name}}</strong> </td>
+        <td> {{_('Belongs to %(owner)s', owner=company.owner.username)}}</td>
+        <td>
+          <a href="">{{_('Edit')}}</a>
+        </td>
+        </tr>
         {% endfor %}
+        </tbody>
+        <table>
       </div>
     </div>
 
