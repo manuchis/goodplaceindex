@@ -14,7 +14,7 @@
             <th>#</th>
             <th>{{_('Username')}}</th>
             <th>{{_('Roles')}}</th>
-            <th>{{_('Companies')}}</th>
+            <th>{{_('Works in')}}</th>
             <th>{{_('Edit')}}</th>
             </tr>
           </thead>
@@ -43,7 +43,7 @@
             {% endif %}
           </td>
           <td>
-            <a href="">{{_('Edit')}}</a>
+            <a href="{{ url_for('admin.admin_edit_user', id=user.id) }}">{{_('Edit')}}</a>
           </td>
 
         </tr>
@@ -68,7 +68,7 @@
         <tr>
         <th>{{company.id}}</th>
         <td><strong>{{company.name}}</strong> </td>
-        <td> {{_('Belongs to %(owner)s', owner=company.owner.username)}}</td>
+        <td> {{company.owner.username}}</td>
         <td>
           <a href="">{{_('Edit')}}</a>
         </td>
