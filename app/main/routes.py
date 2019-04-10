@@ -97,9 +97,10 @@ def edit_company(id):
     company = Company.query.filter_by(id=id).first_or_404()
     form = EditCompanyForm(company.name)
     users = User.query.all()
-    if current_user.id is not company.user_id:
-        flash(_('You must be the company owner to edit it'))
-        return redirect(url_for('main.index'));
+    if not current_user.has_role('admin'):
+        if current_user.id is not company.user_id:
+            flash(_('You must be the company owner to edit it'))
+            return redirect(url_for('main.index'));
     if form.validate_on_submit():
         company.name = form.name.data
         db.session.commit()
@@ -177,12 +178,11 @@ def company_hire(company_id, user_id):
     company = Company.query.filter_by(id=company_id).first_or_404()
     form = EditCompanyForm(company.name)
     user = User.query.filter_by(id=user_id).first()
-    ### falta la funcion !!
     if user is None:
         flash(_('User %(username)s not found.', username=username))
         return redirect(url_for('main.edit_company', title=_('Edit Company'), id=company.id, company=company, form=form))
     if user == current_user:
-        flash(_('You cannot fire yourself!'))
+        flash(_('You cannot hire yourself!'))
         return redirect(url_for('main.edit_company', title=_('Edit Company'), id=company.id, company=company, form=form))
 
     company.hire(user)
