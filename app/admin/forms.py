@@ -7,7 +7,7 @@ from app.models import User, Company
 
 class EditProfileForm(FlaskForm):
     username = StringField(_l('Username'), render_kw={'readonly': True}, validators=[DataRequired()])
-    about_me = TextAreaField(_l('About me'), render_kw={'readonly': True}, 
+    about_me = TextAreaField(_l('About me'), render_kw={'readonly': True},
                              validators=[Length(min=0, max=140)])
     roles = SelectMultipleField(_l('Roles'), coerce=int)
     submit = SubmitField(_l('Submit'))
@@ -23,21 +23,16 @@ class EditProfileForm(FlaskForm):
                 raise ValidationError(_('Please use a different username.'))
 
 class EditCompanyForm(FlaskForm):
-    name = StringField(_l('Change name'), validators=[DataRequired()])
-    #user_id = TextAreaField(_l('Company owner'),
-    #                         validators=[DataRequired()])
+    name = StringField(_l('Name'), validators=[DataRequired()])
+    user_id = SelectField(_l('Company owner'), coerce=int, validators=[DataRequired()])
     submit = SubmitField(_l('Submit'))
-    def validate_name(self, name):
-        company = Company.query.filter_by(name=name.data).first()
-        if company is not None:
-            raise ValidationError(_('Please use a different name.'))
 
-class CreateCompanyForm(FlaskForm):
-    name = StringField(_l('Change name'), validators=[DataRequired()])
-    #user_id = TextAreaField(_l('Company owner'),
-    #                         validators=[DataRequired()])
-    submit = SubmitField(_l('Submit'))
+    def __init__(self, original_name, *args, **kwargs):
+        super(EditCompanyForm, self).__init__(*args, **kwargs)
+        self.original_name = original_name
+
     def validate_name(self, name):
-        company = Company.query.filter_by(name=name.data).first()
-        if company is not None:
-            raise ValidationError(_('Please use a different name.'))
+        if name.data != self.original_name:
+            company = Company.query.filter_by(name=name.data).first()
+            if company is not None:
+                raise ValidationError(_('Please use a different name.'))

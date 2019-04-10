@@ -286,7 +286,6 @@ class Company(db.Model):
         return self.employees.filter(
             employment_table.c.user_id == user.id).count() > 0
 
-
 class Post(SearchableMixin, db.Model):
     __searchable__ = ['body']
     id = db.Column(db.Integer, primary_key=True)

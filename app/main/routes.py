@@ -113,27 +113,41 @@ def edit_company(id):
 @bp.route('/company/<int:id>/delete')
 @login_required
 def delete_company(id):
-    form = CreateCompanyForm()
     company = Company.query.filter_by(id=id).first_or_404()
-    if current_user.id is not company.user_id:
-        flash(_('You must be the company owner to edit it'))
-        return redirect(url_for('main.index'));
+    form = CreateCompanyForm()
+    if not current_user.has_role('admin'):
+        if current_user.id is not company.user_id:
+            flash(_('You must be the company owner to edit it'))
+            return redirect(url_for('main.index'))
     db.session.delete(company)
     db.session.commit()
-    return render_template('new_company.html', form=form)
+    if current_user.has_role('admin'):
+        return redirect(url_for('admin.admin'))
+    else:
+        return render_template('new_company.html', form=form)
 
 #creates new company (only available from the current user as owner)
 @bp.route('/company/new', methods=['GET', 'POST'])
 @login_required
 def new_company():
     form = CreateCompanyForm()
+    users_list = [(g.id, g.username) for g in User.query.order_by('username')]
+    form.user_id.choices = users_list
+    form.user_id.default = current_user.id
+    #only admin can change user
+    if not current_user.has_role('admin'):
+        form.user_id.render_kw = {'readonly': True}
     if form.validate_on_submit():
-        company = Company(name=form.name.data, user_id=current_user.id)
+        company = Company(name=form.name.data, user_id=form.user_id.data)
         db.session.add(company)
         db.session.commit()
         flash(_('Your changes have been saved.'))
         c = Company.query.filter_by(name=form.name.data).first()
-        return redirect(url_for('main.edit_company', id=c.id))
+        if current_user.has_role('admin'):
+            return redirect(url_for('admin.admin_edit_company', id=c.id))
+        else:
+            return redirect(url_for('main.edit_company', id=c.id))
+    form.process()         #form is processed to add "default" values to user_id, it should be processed at the end to avoid CSRF failure
     return render_template('new_company.html',  title=_('Create new Company'), form=form)
 
 # delets user as employee of the company

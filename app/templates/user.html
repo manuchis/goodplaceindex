@@ -7,23 +7,29 @@
             <td>
                 <h1>{{ _('User') }}: {{ user.username }}</h1>
                 {% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %}
-                {% for role in user.roles %}
-                  {{ _('Your role is %(role)s', role=role.name) }}
-                {% endfor %}
+                {% if user.roles %}
+                  {{_('Your roles are: ')}}{{ user.roles|join(', ', attribute='name') }}
+                {% endif %}
                 {% if user.last_seen %}
                 <p>{{ _('Last seen on') }}: {{ moment(user.last_seen).format('LLL') }}</p>
                 {% endif %}
                 {% if companies.count() > 0 %}
-                <p>{{ _('Companies you own:') }} {% for company in companies %}<a href="{{ url_for('main.edit_company', id=company.id) }}">{{ company.name }}</a>{% endfor %}</p>
+                <p>
+                  {% set comma = joiner(", ") %}
+                  {{ _('Companies you own:') }}
+                  {% for company in companies %}
+                  {{ comma() }}<a href="{{ url_for('main.edit_company', id=company.id) }}">{{ company.name }}</a>
+                  {% endfor %}
+                </p>
                 {% else %}
-                <p>{{ _('No companies to show') }}</p>
+                  <p>{{ _('No companies to show') }}</p>
                 {% endif %}
-                <p><a href="{{ url_for('main.new_company') }}">{{ _('Create new company') }}</a></p>
+                <p><a href="{{ url_for('main.new_company') }}" class="btn btn-default">{{ _('Create new company') }}</a></p>
                 <p>{{ _('%(count)d followers', count=user.followers.count()) }}, {{ _('%(count)d following', count=user.followed.count()) }}</p>
                 {% if user == current_user %}
-                <p><a href="{{ url_for('main.edit_profile') }}">{{ _('Edit your profile') }}</a></p>
+                <p><a href="{{ url_for('main.edit_profile') }}" class="btn btn-default">{{ _('Edit your profile') }}</a></p>
                 {% if not current_user.get_task_in_progress('export_posts') %}
-                <p><a href="{{ url_for('main.export_posts') }}">{{ _('Export your posts') }}</a></p>
+                <p><a href="{{ url_for('main.export_posts') }}" class="btn btn-default disabled">{{ _('Export your posts') }}</a></p>
                 {% endif %}
                 {% elif not current_user.is_following(user) %}
                 <p><a href="{{ url_for('main.follow', username=user.username) }}">{{ _('Follow') }}</a></p>

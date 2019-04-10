@@ -70,12 +70,14 @@
         <td><strong>{{company.name}}</strong> </td>
         <td> {{company.owner.username}}</td>
         <td>
-          <a href="">{{_('Edit')}}</a>
+          <a href="{{ url_for('admin.admin_edit_company', id=company.id) }}">{{_('Edit')}}</a>
         </td>
         </tr>
         {% endfor %}
         </tbody>
         <table>
+          <a href="{{ url_for('main.new_company') }}" class="btn btn-default">{{ _('Create') }}</a>
+
       </div>
     </div>
 
