@@ -1,8 +1,10 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
+from flask_wtf.html5 import TelField
 from flask_babel import _, lazy_gettext as _l
 from app.models import User
+
 
 
 class LoginForm(FlaskForm):
@@ -17,7 +19,7 @@ class RegistrationForm(FlaskForm):
     email = StringField(_l('Email'), validators=[DataRequired(), Email()])
     name = StringField(_l('Name'), validators=[DataRequired()])
     surname = StringField(_l('Last Name'), validators=[DataRequired()])
-    phone = StringField(_l('Phone Number'))
+    phone = TelField(_l('Phone Number'), validators=[DataRequired()])
     password = PasswordField(_l('Password'), validators=[DataRequired()])
     password2 = PasswordField(
         _l('Repeat Password'), validators=[DataRequired(),

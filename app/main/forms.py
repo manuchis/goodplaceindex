@@ -1,5 +1,6 @@
 from flask import request
 from flask_wtf import FlaskForm
+from flask_wtf.html5 import TelField
 from wtforms import StringField, SubmitField, TextAreaField, SelectField
 from wtforms.validators import ValidationError, DataRequired, Length
 from flask_babel import _, lazy_gettext as _l
@@ -8,6 +9,9 @@ from sqlalchemy import func
 
 class EditProfileForm(FlaskForm):
     username = StringField(_l('Username'), validators=[DataRequired()])
+    name = StringField(_l('Name'), validators=[DataRequired()])
+    surname = StringField(_l('Last Name'), validators=[DataRequired()])
+    phone = TelField(_l('Phone Number'), validators=[DataRequired()])
     about_me = TextAreaField(_l('About me'),
                              validators=[Length(min=0, max=140)])
     submit = SubmitField(_l('Submit'))

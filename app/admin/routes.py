@@ -62,12 +62,18 @@ def admin_edit_user(id):
         #process form
         user.username = form.username.data
         user.about_me = form.about_me.data
+        user.name = form.name.data
+        user.surname = form.surname.data
+        user.phone = form.phone.data
         user.roles = Role.query.filter(Role.id.in_(form.roles.data)).all()
         db.session.commit()
         flash(_('Your changes have been saved.'))
         return redirect(url_for('admin.admin_edit_user', id=id))
     elif request.method == 'GET':
         #load page with data
+        form.name.data = user.name
+        form.surname.data= user.surname
+        form.phone.data = user.phone
         form.username.data = user.username
         form.about_me.data = user.about_me
         # pass roles id to list
