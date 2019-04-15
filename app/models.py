@@ -96,6 +96,9 @@ employment_table = db.Table('employment',
 class User(UserMixin, PaginatedAPIMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
+    name = db.Column(db.String(64))
+    surname = db.Column(db.String(64))
+    phone = db.Column(db.Numeric)
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
     posts = db.relationship('Post', backref='author', lazy='dynamic')

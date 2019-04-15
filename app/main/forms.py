@@ -4,6 +4,7 @@ from wtforms import StringField, SubmitField, TextAreaField, SelectField
 from wtforms.validators import ValidationError, DataRequired, Length
 from flask_babel import _, lazy_gettext as _l
 from app.models import User, Company
+from sqlalchemy import func
 
 class EditProfileForm(FlaskForm):
     username = StringField(_l('Username'), validators=[DataRequired()])
@@ -30,7 +31,8 @@ class EditCompanyForm(FlaskForm):
 
     def validate_name(self, name):
         if name.data != self.original_name:
-            company = Company.query.filter_by(name=name.data).first()
+            ## In this case the comparison also looks for non case sensitive equivalences
+            company = Company.query.filter(func.lower(Company.name) == func.lower(name.data)).first()
             if company is not None:
                 raise ValidationError(_('Please use a different name.'))
 
@@ -40,7 +42,7 @@ class CreateCompanyForm(FlaskForm):
     submit = SubmitField(_l('Submit'))
 
     def validate_name(self, name):
-        company = Company.query.filter_by(name=name.data).first()
+        company = Company.query.filter(func.lower(Company.name) == func.lower(name.data)).first()
         if company is not None:
             raise ValidationError(_('Please use a different name.'))
 

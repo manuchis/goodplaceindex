@@ -15,6 +15,9 @@ class LoginForm(FlaskForm):
 class RegistrationForm(FlaskForm):
     username = StringField(_l('Username'), validators=[DataRequired()])
     email = StringField(_l('Email'), validators=[DataRequired(), Email()])
+    name = StringField(_l('Name'), validators=[DataRequired()])
+    surname = StringField(_l('Last Name'), validators=[DataRequired()])
+    phone = StringField(_l('Phone Number'))
     password = PasswordField(_l('Password'), validators=[DataRequired()])
     password2 = PasswordField(
         _l('Repeat Password'), validators=[DataRequired(),
