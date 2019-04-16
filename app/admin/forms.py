@@ -1,9 +1,9 @@
 from flask import request
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, TextAreaField, SelectField, SelectMultipleField
-from wtforms.validators import ValidationError, DataRequired, Length
+from wtforms import StringField, SubmitField, TextAreaField, SelectField, SelectMultipleField, DecimalField, IntegerField
+from wtforms.validators import ValidationError, DataRequired, Length, InputRequired
 from flask_babel import _, lazy_gettext as _l
-from app.models import User, Company
+from app.models import User, Company, Product
 
 class EditProfileForm(FlaskForm):
     username = StringField(_l('Username'), render_kw={'readonly': True}, validators=[DataRequired()])
@@ -36,3 +36,11 @@ class EditCompanyForm(FlaskForm):
             company = Company.query.filter_by(name=name.data).first()
             if company is not None:
                 raise ValidationError(_('Please use a different name.'))
+
+class CreateProductForm(FlaskForm):
+    name = StringField(_l('Product Name'), validators=[DataRequired()])
+    type = SelectField(_l('Type of subscription'), coerce=int, choices=[(0, 'Unlimited'), (1, 'Month'), (2, 'Year')], validators=[InputRequired()])
+    price = DecimalField(_l('Price'), validators=[InputRequired()], description='In euros (€)')
+    requests_limit = IntegerField(_l('Member requests limit'), validators=[DataRequired()], description='-1 for unlimited, 0 is not valid', default=-1)
+    visible = SelectField(_l('Published'),coerce=lambda x: x == 'True', choices=[(True, 'Yes'), (False, 'No')], validators=[InputRequired()], default=False)
+    submit = SubmitField(_l('Submit'))

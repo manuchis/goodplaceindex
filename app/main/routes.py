@@ -8,7 +8,7 @@ from flask_babel import _, get_locale
 from guess_language import guess_language
 from app import db
 from app.main.forms import EditProfileForm, PostForm, SearchForm, MessageForm, PropertySearch, EditCompanyForm, CreateCompanyForm
-from app.models import User, Post, Message, Notification, Company, Role, UserRoles, Membership
+from app.models import User, Post, Message, Notification, Company, Role, UserRoles, Membership, Product
 from app.translate import translate
 from app.main import bp
 
@@ -82,6 +82,23 @@ def explore():
     return render_template('index.html', title=_('Explore'),
                            posts=posts.items, next_url=next_url,
                            prev_url=prev_url)
+
+@bp.route('/subscriptions/<int:id>')
+@login_required
+def subscriptions(id):
+    membership = Membership.query.filter_by(id=id).first_or_404()
+    member = membership.member() # recovers original member (user or company) from membership
+    products = Product.query.order_by(Product.name.desc())
+    return render_template('subscriptions.html', title=_('Subscription plans'), products=products, member=member)
+
+@bp.route('/subscribe/<int:product_id>/member/<int:membership_id>')
+@login_required
+def subscribe(product_id, membership_id):
+    membership = Membership.query.filter_by(id=membership_id).first_or_404()
+    member = membership.member() # recovers original member (user or company) from membership
+    product = Product.query.filter_by(id=product_id).first_or_404()
+    flash(_('You are now subscribed to %(product)s plan!', product=product.name))
+    return redirect(url_for('main.subscriptions', id=membership_id))
 
 # company profile
 @bp.route('/company/<int:id>')

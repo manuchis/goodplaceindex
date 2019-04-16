@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+    <h1>{{ _('Subscription plans') }}</h1>
+    <p>{{_('Subscription plans for')}}: {% if member.member_type == 'user'%}{{ member.username }} {% else %} {{ member.name }} {% endif %}</p>
+    <div class="row">
+      <div class="col-md-12">
+        <h2>{{ _('Products') }}</h2>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+            <th>#</th>
+            <th>{{_('Name')}}</th>
+            <th>{{_('Type')}}</th>
+            <th>{{_('Price')}}</th>
+            <th>{{_('Subscribe')}}</th>
+            </tr>
+          </thead>
+        <tbody>
+        {% for product in products %}
+        {% if product.visible == True %}
+        <tr>
+          <th>{{product.id}}</th>
+          <td>
+            <strong>{{product.name}}</strong>
+          </td>
+          <td>
+            {{product.type}}
+          </td>
+          <td>
+            € {{product.price}}
+          </td>
+          <td>
+            <a href="{{url_for('main.subscribe', product_id=product.id, membership_id=member.membership_id, )}}">{{_('Subscribe')}}</a>
+          </td>
+
+        </tr>
+        {% endif %}
+        {% endfor %}
+        </tbody>
+      </table>
+      </div>
+    </div> <!-- Ends row -->
+
+{% endblock %}

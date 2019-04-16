@@ -79,7 +79,44 @@
           <a href="{{ url_for('main.new_company') }}" class="btn btn-default">{{ _('Create') }}</a>
 
       </div>
-    </div>
+    </div> <!-- Ends row -->
 
+    <div class="row">
+      <div class="col-md-12">
+        <h2>{{ _('Products') }}</h2>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+            <th>#</th>
+            <th>{{_('Name')}}</th>
+            <th>{{_('Type')}}</th>
+            <th>{{_('Price')}}</th>
+            <th>{{_('Edit')}}</th>
+            </tr>
+          </thead>
+        <tbody>
+        {% for product in products %}
+        <tr>
+          <th>{{product.id}}</th>
+          <td>
+            <strong>{{product.name}}</strong>
+          </td>
+          <td>
+            {{product.type}}
+          </td>
+          <td>
+            {{product.price}}
+          </td>
+          <td>
+            <a href="{{ url_for('admin.admin_edit_product', id=product.id) }}">{{_('Edit')}}</a>
+          </td>
+
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <a href="{{ url_for('admin.admin_new_product') }}" class="btn btn-default">{{ _('Create') }}</a>
+      </div>
+    </div> <!-- Ends row -->
 
 {% endblock %}

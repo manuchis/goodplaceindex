@@ -5,9 +5,11 @@
         <tr>
             <td>
                 <h1>{{ _('Company name') }}: {{ company.name }}</h1>
-                {% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %}
                 {% if company.user_id %}
                 <p>{{ _('Owner') }}: {{ company.owner.username }}</p>
+                {% endif %}
+                {% if company.membership_id %}
+                <p>{{ _('Member ID') }}: {{ company.membership_id }}</p>
                 {% endif %}
             </td>
         </tr>

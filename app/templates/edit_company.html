@@ -11,6 +11,12 @@
     <a href="{{ url_for('main.delete_company', id=company.id) }}" class="btn btn-default">{{ _('Delete company') }}</a>
 
     <div class="row">
+      <h2>{{ _('Subscriptions') }}</h2>
+      {% if subsciptions %}{% endif %}
+      <a href="{{ url_for('main.subscriptions', id=company.membership_id) }}" class="btn btn-default">{{ _('Add subscription plan') }}</a>
+    </div>
+
+    <div class="row">
       <h2>{{ _('Employees') }}</h2>
     <div class="col-md-4">
     {% for empl in company.employees %}

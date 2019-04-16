@@ -7,11 +7,11 @@ from flask_principal import Principal, Permission, identity_loaded, RoleNeed, Us
 from flask_babel import _, get_locale
 from guess_language import guess_language
 from app import db
-from app.models import User, Post, Message, Notification, Company, Role, UserRoles
+from app.models import User, Post, Message, Notification, Company, Role, UserRoles, Product
 from app.translate import translate
 from app.main import bp
 from app.main.forms import SearchForm
-from app.admin.forms import EditProfileForm, EditCompanyForm
+from app.admin.forms import EditProfileForm, EditCompanyForm, CreateProductForm
 from app.admin import bp
 
 @bp.before_app_request
@@ -48,7 +48,8 @@ admin_permission = Permission(RoleNeed('admin'))
 def admin():
     users = User.query.order_by(User.username.asc())
     companies = Company.query.order_by(Company.name.asc())
-    return render_template('admin/index.html', title=_('Admin'), users=users, companies=companies)
+    products = Product.query.order_by(Product.name.asc())
+    return render_template('admin/index.html', title=_('Admin'), users=users, companies=companies, products=products)
 
 @bp.route('/user/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -103,3 +104,39 @@ def admin_edit_company(id):
         form.name.data = company.name
         form.user_id.data = company.user_id
     return render_template('edit_company.html',  title=_('Edit Company'), form=form, company=company, users=users)
+
+@bp.route('/product/new', methods=['GET', 'POST'])
+@login_required
+@admin_permission.require()
+def admin_new_product():
+    form = CreateProductForm()
+    if form.validate_on_submit():
+        product = Product(name=form.name.data, price=form.price.data, type=form.type.data, requests_limit=form.requests_limit.data, visible=form.requests_limit.data)
+        db.session.add(product)
+        db.session.commit()
+        flash(_('Your changes have been saved.'))
+        return redirect(url_for('admin.admin'))
+    return render_template('admin/new_product.html',  title=_('New Product'), form=form)
+
+@bp.route('/product/<int:id>', methods=['GET', 'POST'])
+@login_required
+@admin_permission.require()
+def admin_edit_product(id):
+    product = Product.query.filter_by(id=id).first_or_404()
+    form = CreateProductForm()
+    if form.validate_on_submit():
+        product.name = form.name.data
+        product.price = form.price.data
+        product.type = form.type.data
+        product.requests_limit = form.requests_limit.data
+        product.visible = form.visible.data
+        db.session.commit()
+        flash(_('Your changes have been saved.'))
+        return redirect(url_for('admin.admin_edit_product', id=id))
+    elif request.method == 'GET':
+        form.name.data = product.name
+        form.price.data = product.price
+        form.type.data = product.type
+        form.requests_limit.data = product.requests_limit
+        form.visible.data = product.visible
+    return render_template('admin/edit_product.html',  title=_('New Product'), form=form)

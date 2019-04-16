@@ -95,6 +95,19 @@ employment_table = db.Table('employment',
 class Membership(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
+    #checks if it is a User or Company
+    def member(self):
+        user = User.query.filter_by(membership_id=self.id).first()
+        company = Company.query.filter_by(membership_id=self.id).first()
+        if user:
+            user.member_type = 'user'
+            return user
+        elif company:
+            company.member_type = 'company'
+            return company
+        else:
+            return False
+
 class User(UserMixin, PaginatedAPIMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
@@ -312,6 +325,7 @@ class Subscription(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     start = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     expires = db.Column(db.DateTime, index=True)
+    renew = db.Column(db.Boolean)
     active = db.Column(db.Boolean)
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
     membership_id = db.Column(db.Integer, db.ForeignKey('membership.id'))
