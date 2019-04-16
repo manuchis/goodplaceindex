@@ -258,11 +258,6 @@ class User(UserMixin, PaginatedAPIMixin, db.Model):
 def load_user(id):
     return User.query.get(int(id))
 
-class Requests(db.Model):
-    id = db.Column(db.Integer(), primary_key=True)
-    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    membership_id = db.Column(db.Integer, db.ForeignKey('membership.id'))
-
 # Define the Role data-model
 class Role(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
@@ -299,6 +294,35 @@ class Company(db.Model):
     def is_employing(self, user):
         return self.employees.filter(
             employment_table.c.user_id == user.id).count() > 0
+
+class Requests(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    membership_id = db.Column(db.Integer, db.ForeignKey('membership.id'))
+
+class Product(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(128), index=True)
+    type = db.Column(db.String(64), index=True)
+    price = db.Column(db.Numeric)
+    requests_limit = db.Column(db.Integer)
+
+class Subscription(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    start = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    expires = db.Column(db.DateTime, index=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
+    membership_id = db.Column(db.Integer, db.ForeignKey('membership.id'))
+    requests_left = db.Column(db.Integer)
+    requests_limit = db.Column(db.Integer)
+
+class Payment(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    membership_id = db.Column(db.Integer, db.ForeignKey('membership.id'))
+    amount = db.Column(db.Numeric)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    subscription_id = db.Column(db.Integer, db.ForeignKey('subscription.id'))
+    subscription = db.relationship(Subscription, backref=db.backref('payments', uselist=True))
 
 class Post(SearchableMixin, db.Model):
     __searchable__ = ['body']
