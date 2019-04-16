@@ -306,11 +306,13 @@ class Product(db.Model):
     type = db.Column(db.String(64), index=True)
     price = db.Column(db.Numeric)
     requests_limit = db.Column(db.Integer)
+    visible = db.Column(db.Boolean)
 
 class Subscription(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     start = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     expires = db.Column(db.DateTime, index=True)
+    active = db.Column(db.Boolean)
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
     membership_id = db.Column(db.Integer, db.ForeignKey('membership.id'))
     requests_left = db.Column(db.Integer)
