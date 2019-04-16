@@ -258,6 +258,11 @@ class User(UserMixin, PaginatedAPIMixin, db.Model):
 def load_user(id):
     return User.query.get(int(id))
 
+class Requests(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    membership_id = db.Column(db.Integer, db.ForeignKey('membership.id'))
+
 # Define the Role data-model
 class Role(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
