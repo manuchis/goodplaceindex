@@ -8,7 +8,7 @@ from app import db
 from app.auth import bp
 from app.auth.forms import LoginForm, RegistrationForm, \
     ResetPasswordRequestForm, ResetPasswordForm
-from app.models import User, UserRoles, Role
+from app.models import User, UserRoles, Role, Membership
 from app.auth.email import send_password_reset_email
 
 
@@ -48,7 +48,8 @@ def register():
         return redirect(url_for('main.index'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data)
+        mem = Membership()
+        user = User(username=form.username.data, email=form.email.data, name=form.name.data ,surname=form.surname.data ,phone=form.phone.data, membership=mem)
         user.set_password(form.password.data)
         usrrole= Role.query.filter(Role.name == 'user').first()
         user.roles.append(usrrole)

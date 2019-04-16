@@ -8,7 +8,7 @@ from flask_babel import _, get_locale
 from guess_language import guess_language
 from app import db
 from app.main.forms import EditProfileForm, PostForm, SearchForm, MessageForm, PropertySearch, EditCompanyForm, CreateCompanyForm
-from app.models import User, Post, Message, Notification, Company, Role, UserRoles
+from app.models import User, Post, Message, Notification, Company, Role, UserRoles, Membership
 from app.translate import translate
 from app.main import bp
 
@@ -139,7 +139,8 @@ def new_company():
     if not current_user.has_role('admin'):
         form.user_id.render_kw = {'readonly': True}
     if form.validate_on_submit():
-        company = Company(name=form.name.data, user_id=form.user_id.data)
+        mem = Membership()
+        company = Company(name=form.name.data, user_id=form.user_id.data, membership=mem)
         db.session.add(company)
         db.session.commit()
         flash(_('Your changes have been saved.'))

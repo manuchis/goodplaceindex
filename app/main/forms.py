@@ -1,6 +1,6 @@
 from flask import request
 from flask_wtf import FlaskForm
-from flask_wtf.html5 import TelField
+from wtforms.fields.html5 import TelField
 from wtforms import StringField, SubmitField, TextAreaField, SelectField
 from wtforms.validators import ValidationError, DataRequired, Length
 from flask_babel import _, lazy_gettext as _l

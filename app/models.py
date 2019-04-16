@@ -92,6 +92,8 @@ employment_table = db.Table('employment',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True)
 )
 
+class Membership(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
 
 class User(UserMixin, PaginatedAPIMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -109,6 +111,8 @@ class User(UserMixin, PaginatedAPIMixin, db.Model):
     # 'companies' field defines the companies that this user owns, not employee
     companies = db.relationship('Company', backref='owner', lazy='dynamic')
     roles = db.relationship('Role', secondary='user_roles')
+    membership_id = db.Column(db.Integer, db.ForeignKey('membership.id'))
+    membership = db.relationship(Membership, backref=db.backref('users', uselist=True))
     followed = db.relationship(
         'User', secondary=followers,
         primaryjoin=(followers.c.follower_id == id),
@@ -270,6 +274,8 @@ class Company(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    membership_id = db.Column(db.Integer, db.ForeignKey('membership.id'))
+    membership = db.relationship(Membership, backref=db.backref('companies', uselist=True))
     employees = db.relationship("User",
                     secondary=employment_table,
                     backref="employers", lazy='dynamic')

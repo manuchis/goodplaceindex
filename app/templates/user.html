@@ -6,6 +6,7 @@
             <td width="256px"><img src="{{ user.avatar(256) }}"></td>
             <td>
                 <h1>{{ _('User') }}: {{ user.username }}</h1>
+                {% if user.membership %}<p>{{ ('You are the member'),  user.membership }}</p>{% endif %}
                 {% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %}
                 {% if user.roles %}
                   {{_('Your roles are: ')}}{{ user.roles|join(', ', attribute='name') }}
