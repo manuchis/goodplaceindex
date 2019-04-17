@@ -12,6 +12,7 @@ from app.models import User, Post, Message, Notification, Company, Role, UserRol
 from app.translate import translate
 from app.main import bp
 from werkzeug.utils import secure_filename
+import os
 
 @bp.before_app_request
 def before_request():
@@ -160,17 +161,18 @@ def edit_company(id):
 @login_required
 def delete_company(id):
     company = Company.query.filter_by(id=id).first_or_404()
-    form = CreateCompanyForm()
     if not current_user.has_role('admin'):
         if current_user.id is not company.user_id:
             flash(_('You must be the company owner to edit it'))
             return redirect(url_for('main.index'))
+    os.remove(media.path(company.image))
     db.session.delete(company)
     db.session.commit()
     if current_user.has_role('admin'):
         return redirect(url_for('admin.admin'))
     else:
-        return render_template('new_company.html', form=form)
+
+        return redirect(url_for('main.new_company'))
 
 #creates new company (only available from the current user as owner)
 @bp.route('/company/new', methods=['GET', 'POST'])
@@ -185,7 +187,10 @@ def new_company():
         form.user_id.render_kw = {'readonly': True}
     if form.validate_on_submit():
         mem = Membership()
-        company = Company(name=form.name.data, user_id=form.user_id.data, membership=mem)
+        image = form.image.data
+        imagename = secure_filename(image.filename)
+        media.save(form.image.data)
+        company = Company(name=form.name.data, user_id=form.user_id.data, membership=mem, image=imagename)
         db.session.add(company)
         db.session.commit()
         flash(_('Your changes have been saved.'))

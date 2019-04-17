@@ -97,10 +97,14 @@ def admin_edit_company(id):
     if form.validate_on_submit():
         company.user_id = form.user_id.data
         company.name = form.name.data
+        image = form.image.data
+        company.image = secure_filename(image.filename)
+        media.save(form.image.data)
         db.session.commit()
         flash(_('Your changes have been saved.'))
         return redirect(url_for('admin.admin_edit_company', id=id))
     elif request.method == 'GET':
+        form.image.data = company.image
         form.name.data = company.name
         form.user_id.data = company.user_id
     return render_template('edit_company.html',  title=_('Edit Company'), form=form, company=company, users=users)
