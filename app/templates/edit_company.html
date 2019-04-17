@@ -7,6 +7,9 @@
         <div class="col-md-4">
           {{ wtf.quick_form(form) }}
         </div>
+        <div class="col-md-2">
+          <img src="{{config.IMAGES_PATH+company.image}}" alt="{{company.name}}" width="100px">
+        </div>
     </div>
     <a href="{{ url_for('main.delete_company', id=company.id) }}" class="btn btn-default">{{ _('Delete company') }}</a>
 

@@ -287,6 +287,7 @@ class Company(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    image = db.Column(db.Text)
     membership_id = db.Column(db.Integer, db.ForeignKey('membership.id'))
     membership = db.relationship(Membership, backref=db.backref('companies', uselist=True))
     employees = db.relationship("User",

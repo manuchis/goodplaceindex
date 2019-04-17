@@ -2,6 +2,8 @@ from flask import request
 from flask_wtf import FlaskForm
 from wtforms.fields.html5 import TelField
 from wtforms import StringField, SubmitField, TextAreaField, SelectField
+from flask_wtf.file import FileField, FileAllowed, FileRequired
+from flask_uploads import UploadSet, IMAGES
 from wtforms.validators import ValidationError, DataRequired, Length
 from flask_babel import _, lazy_gettext as _l
 from app.models import User, Company
@@ -27,6 +29,7 @@ class EditProfileForm(FlaskForm):
 
 class EditCompanyForm(FlaskForm):
     name = StringField(_l('Change name'), validators=[DataRequired()])
+    image = FileField(validators=[FileRequired(),FileAllowed(IMAGES, _l('Images only!'))])
     submit = SubmitField(_l('Submit'))
 
     def __init__(self, original_name, *args, **kwargs):
@@ -42,6 +45,7 @@ class EditCompanyForm(FlaskForm):
 
 class CreateCompanyForm(FlaskForm):
     name = StringField(_l('Name'), validators=[DataRequired()])
+    image = FileField(validators=[FileRequired(),FileAllowed(IMAGES, _l('Images only!'))])
     user_id = SelectField(_l('Company owner'),  coerce=int, validators=[DataRequired()])
     submit = SubmitField(_l('Submit'))
 

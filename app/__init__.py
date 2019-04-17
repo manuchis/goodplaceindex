@@ -10,11 +10,13 @@ from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from flask_principal import Principal
 from flask_babel import Babel, lazy_gettext as _l
+from flask_uploads import configure_uploads, UploadSet, IMAGES, UploadNotAllowed
 from elasticsearch import Elasticsearch
 from redis import Redis
 import rq
 from config import Config
 from flask_wtf.csrf import CSRFProtect
+from flask_images import Images, resized_img_src
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -27,6 +29,8 @@ moment = Moment()
 babel = Babel()
 principal = Principal()
 csrf = CSRFProtect()
+images = Images()
+media = UploadSet('media', IMAGES)
 
 def create_app(config_class=Config):
     app = Flask(__name__)
@@ -41,6 +45,8 @@ def create_app(config_class=Config):
     babel.init_app(app)
     principal.init_app(app)
     csrf.init_app(app)
+    images.init_app(app)
+    configure_uploads(app, (media))
 
     app.elasticsearch = Elasticsearch([app.config['ELASTICSEARCH_URL']]) \
         if app.config['ELASTICSEARCH_URL'] else None

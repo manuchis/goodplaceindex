@@ -23,3 +23,5 @@ class Config(object):
     REDIS_URL = os.environ.get('REDIS_URL') or 'redis://'
     POSTS_PER_PAGE = 25
     MAPBOX_TOKEN = os.environ.get('MAPBOX_TOKEN')
+    UPLOADS_DEFAULT_DEST = 'app/static/uploads'
+    IMAGES_PATH = '/static/uploads/media/'

@@ -40,3 +40,4 @@ app.db
 microblog.log*
 .flaskenv
 .env
+app/static/uploads/*

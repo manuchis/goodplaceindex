@@ -6,11 +6,12 @@ from flask_login import current_user, login_required
 from flask_principal import Principal, Permission, identity_loaded, RoleNeed, UserNeed
 from flask_babel import _, get_locale
 from guess_language import guess_language
-from app import db
+from app import db, media
 from app.main.forms import EditProfileForm, PostForm, SearchForm, MessageForm, PropertySearch, EditCompanyForm, CreateCompanyForm
 from app.models import User, Post, Message, Notification, Company, Role, UserRoles, Membership, Product, Subscription
 from app.translate import translate
 from app.main import bp
+from werkzeug.utils import secure_filename
 
 @bp.before_app_request
 def before_request():
@@ -143,10 +144,14 @@ def edit_company(id):
             return redirect(url_for('main.index'));
     if form.validate_on_submit():
         company.name = form.name.data
+        image = form.image.data
+        company.image = secure_filename(image.filename)
+        media.save(form.image.data)
         db.session.commit()
         flash(_('Your changes have been saved.'))
         return redirect(url_for('main.edit_company', id=id))
     elif request.method == 'GET':
+        form.image.data = company.image
         form.name.data = company.name
     return render_template('edit_company.html',  title=_('Edit Company'), company=company, form=form, users=users)
 
