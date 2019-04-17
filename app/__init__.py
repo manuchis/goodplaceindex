@@ -16,7 +16,7 @@ from redis import Redis
 import rq
 from config import Config
 from flask_wtf.csrf import CSRFProtect
-from flask_images import Images, resized_img_src
+
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -29,7 +29,6 @@ moment = Moment()
 babel = Babel()
 principal = Principal()
 csrf = CSRFProtect()
-images = Images()
 media = UploadSet('media', IMAGES)
 
 def create_app(config_class=Config):
@@ -45,7 +44,6 @@ def create_app(config_class=Config):
     babel.init_app(app)
     principal.init_app(app)
     csrf.init_app(app)
-    images.init_app(app)
     configure_uploads(app, (media))
 
     app.elasticsearch = Elasticsearch([app.config['ELASTICSEARCH_URL']]) \
