@@ -4,15 +4,16 @@
 
 * Python 3
 * Mysql
+Sorry, more detailed requirements are yet to come. 
 
 ## Installation
+These are instructions for development installation. You can also deploy it using Docker, or Vagrant. See more on the [Tutorial](https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xvii-deployment-on-linux)
 
 ### Install requirements
-```$ pip install -r requirements.txt
-```
+`$ pip install -r requirements.txt`
+
 Update requirements:
-```$ pip freeze > requirements.txt
-```
+`$ pip freeze > requirements.txt`
 
 ### Environment configuration
 Generate an`.env` file, see `example.env` file.
@@ -38,6 +39,5 @@ Then: Use command `$ flask run`.
 For testing `$ flask shell`.
 
 --
-You can also deploy it using Docker, or Vagrant. See more on the [Tutorial](https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xvii-deployment-on-linux)
 
 **NOTE**: This is a development made from the example application featured in [Flask Mega-Tutorial](https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world).
