@@ -8,7 +8,7 @@ from flask_babel import _, get_locale
 from guess_language import guess_language
 from app import db
 from app.main.forms import EditProfileForm, PostForm, SearchForm, MessageForm, PropertySearch, EditCompanyForm, CreateCompanyForm
-from app.models import User, Post, Message, Notification, Company, Role, UserRoles, Membership, Product
+from app.models import User, Post, Message, Notification, Company, Role, UserRoles, Membership, Product, Subscription
 from app.translate import translate
 from app.main import bp
 
@@ -89,14 +89,37 @@ def subscriptions(id):
     membership = Membership.query.filter_by(id=id).first_or_404()
     member = membership.member() # recovers original member (user or company) from membership
     products = Product.query.order_by(Product.name.desc())
-    return render_template('subscriptions.html', title=_('Subscription plans'), products=products, member=member)
+    subscriptions = Subscription.query.filter_by(membership_id=member.membership_id).all()
+    return render_template('subscriptions.html', title=_('Subscription plans'), products=products, member=member, subscriptions=subscriptions)
 
 @bp.route('/subscribe/<int:product_id>/member/<int:membership_id>')
 @login_required
 def subscribe(product_id, membership_id):
     membership = Membership.query.filter_by(id=membership_id).first_or_404()
     member = membership.member() # recovers original member (user or company) from membership
+    if member.member_type is 'company':
+        if not current_user.has_role('admin'):
+            if current_user.id is not member.user_id:
+                flash(_('You must be the company owner to edit it'))
+                return redirect(url_for('main.index'));
+    elif member.member_type is 'user':
+        if not current_user.has_role('admin'):
+            if current_user.id is not member.id:
+                flash(_('You can only subscribe to a plan as yourself or as a company owner'))
+                return redirect(url_for('main.index'));
     product = Product.query.filter_by(id=product_id).first_or_404()
+
+    #### HACER UNA FUNCION DE ESTO!
+    #if product.type == 0:
+    #    p_exp = False
+    #elif product.type == 1:
+    #    p_exp = datetime.datetime.utcnow() + datetime.timedelta(days=30)
+    #elif product.type == 2:
+    #    p_exp = datetime.datetime.utcnow() + datetime.timedelta(days=365)
+
+    subscription = Subscription(active=False, product_id=product.id, membership_id=membership.id, requests_left=product.requests_limit, requests_limit=product.requests_limit, start=datetime.utcnow(), expires=datetime.utcnow(), renew=False)
+    db.session.add(subscription)
+    db.session.commit()
     flash(_('You are now subscribed to %(product)s plan!', product=product.name))
     return redirect(url_for('main.subscriptions', id=membership_id))
 

@@ -20,7 +20,7 @@
         {% for product in products %}
         {% if product.visible == True %}
         <tr>
-          <th>{{product.id}}</th>
+          <th>{{ product.id }}</th>
           <td>
             <strong>{{product.name}}</strong>
           </td>
@@ -31,7 +31,11 @@
             € {{product.price}}
           </td>
           <td>
-            <a href="{{url_for('main.subscribe', product_id=product.id, membership_id=member.membership_id, )}}">{{_('Subscribe')}}</a>
+            {% for subs in subscriptions if subs.product_id == product.id %}
+              {{ _('Already subscribed') }}
+            {% else %}
+              <a href="{{url_for('main.subscribe', product_id=product.id, membership_id=member.membership_id, )}}">{{_('Subscribe')}}</a>
+            {% endfor %}
           </td>
 
         </tr>
