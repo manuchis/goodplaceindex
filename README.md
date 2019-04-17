@@ -1,10 +1,12 @@
 # Welcome to Good Place Platform!
 
+This platform becomes the core of multiple others. A CRM core for other kind of apps.
+
 ## Requirements
 
 * Python 3
 * Mysql
-Sorry, more detailed requirements are yet to come. 
+Sorry, more detailed requirements are yet to come.
 
 ## Installation
 These are instructions for development installation. You can also deploy it using Docker, or Vagrant. See more on the [Tutorial](https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xvii-deployment-on-linux)
