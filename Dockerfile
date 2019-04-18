@@ -11,10 +11,10 @@ RUN venv/bin/pip install gunicorn pymysql
 
 COPY app app
 COPY migrations migrations
-COPY goodplace.py config.py boot.sh ./
+COPY goodplaceindex.py config.py boot.sh ./
 RUN chmod a+x boot.sh
 
-ENV FLASK_APP goodplace.py
+ENV FLASK_APP goodplaceindex.py
 
 RUN chown -R goodplace:goodplace ./
 USER goodplace
